@@ -11,7 +11,7 @@ scheduling, and an AI compose agent.
 
 ```bash
 npm install
-cp .env.example .env.local      # add RESEND_API_KEY + OPENAI_API_KEY
+# Create .env.local with the variables listed below.
 npm run dev                     # http://localhost:3000
 ```
 
