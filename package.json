@@ -3,23 +3,47 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "concurrently -n next,worker -c blue,magenta \"next dev\" \"tsx watch --env-file-if-exists=.env --env-file-if-exists=.env.local src/temporal/worker.ts\"",
+    "dev:next": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "temporal:worker": "tsx --env-file-if-exists=.env --env-file-if-exists=.env.local src/temporal/worker.ts"
   },
   "dependencies": {
     "@puckeditor/core": "^0.21.1",
     "@react-email/components": "^1.0.9",
+    "@react-email/render": "^2.0.8",
     "@temporalio/activity": "^1.15.0",
     "@temporalio/client": "^1.15.0",
     "@temporalio/worker": "^1.15.0",
     "@temporalio/workflow": "^1.15.0",
+    "@tiptap/core": "^3.22.5",
+    "@tiptap/extension-blockquote": "^3.22.5",
+    "@tiptap/extension-bold": "^3.22.5",
+    "@tiptap/extension-code": "^3.22.5",
+    "@tiptap/extension-code-block": "^3.22.5",
+    "@tiptap/extension-document": "^3.22.5",
+    "@tiptap/extension-hard-break": "^3.22.5",
+    "@tiptap/extension-heading": "^3.22.5",
+    "@tiptap/extension-horizontal-rule": "^3.22.5",
+    "@tiptap/extension-italic": "^3.22.5",
+    "@tiptap/extension-link": "^3.22.5",
+    "@tiptap/extension-list": "^3.22.5",
+    "@tiptap/extension-paragraph": "^3.22.5",
+    "@tiptap/extension-strike": "^3.22.5",
+    "@tiptap/extension-text": "^3.22.5",
+    "@tiptap/extension-text-align": "^3.22.5",
+    "@tiptap/extension-underline": "^3.22.5",
+    "@tiptap/html": "^3.22.5",
+    "@tiptap/react": "^3.22.5",
     "next": "16.1.6",
+    "openai": "^6.35.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-email": "^5.2.9",
-    "resend": "^6.9.3"
+    "resend": "^6.9.3",
+    "zod": "^4.4.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -27,9 +51,11 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
+    "concurrently": "^9.2.1",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }

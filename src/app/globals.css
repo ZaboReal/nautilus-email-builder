@@ -1,26 +1,325 @@
 @import "tailwindcss";
 
+/* Two-mode editorial theme.
+   Light: warm sand background, deep ink text, hairline ink borders.
+   Dark : pure black background, barely-there off-black surfaces,
+          hairline white borders. (doublespeed.ai-style.)
+   Both modes share the same electric-blue accent and the same
+   typographic mix: Instrument Serif italic for display, Geist Sans for
+   body, Geist Mono for technical labels. */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* light = sand */
+  --bg: #ede4d0;
+  --surface: rgba(255, 255, 255, 0.55);
+  --surface-2: rgba(255, 255, 255, 0.75);
+  --surface-elev: #f5ebd6;
+  --border: rgba(40, 28, 14, 0.12);
+  --border-strong: rgba(40, 28, 14, 0.22);
+  --fg: #1f160a;
+  --fg-2: #5a4f3c;
+  --fg-muted: #8a7a62;
+  --accent: #0099ff;
+  --accent-fg: #ffffff;
+  --danger: #c83a5e;
+  --success: #1ea672;
+}
+
+.dark {
+  /* dark = pure black */
+  --bg: #000000;
+  --surface: rgba(255, 255, 255, 0.02);
+  --surface-2: rgba(255, 255, 255, 0.04);
+  /* Modal/drawer surface is slightly raised from pure black so it's
+     visually distinguishable from the backdrop. */
+  --surface-elev: #0a0a0a;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --fg: #ffffff;
+  --fg-2: #c2c2c2;
+  --fg-muted: #777777;
+  --accent: #0099ff;
+  --accent-fg: #ffffff;
+  --danger: #ff5577;
+  --success: #00f01c;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-bg-page: var(--bg);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-instrument-serif);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-feature-settings: "ss01", "cv11";
+  letter-spacing: -0.005em;
+  min-height: 100vh;
+  overflow: hidden;
+  /* No bg here — the app wrapper paints it so the .dark class on the
+     wrapper (not html) controls the theme. */
+}
+
+/* The app shell — paints the page background. The `.dark` class lives
+   on this element, controlled by React state, so toggling it instantly
+   swaps light/dark for the entire UI. Flat colors only — no noise
+   layer that could leak warm tones into dark mode. */
+.app-shell {
+  color: var(--fg);
+  height: 100%;
+  background: var(--bg);
+}
+
+/* Display headline utility — Instrument Serif italic. Use sparingly. */
+.font-display {
+  font-family: var(--font-instrument-serif), Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+.font-mono {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+/* === Surface utilities === */
+
+@utility glass-surface {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+@utility glass-surface-strong {
+  background: var(--surface-elev);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+@utility glass-pill {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+@utility glass-input {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--fg);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.005em;
+  transition:
+    border-color 120ms ease,
+    background 120ms ease;
+}
+.glass-input::placeholder {
+  color: var(--fg-muted);
+}
+.glass-input:focus {
+  outline: none;
+  border-color: var(--border-strong);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+@utility glass-button {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--fg);
+  border-radius: 8px;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease,
+    transform 80ms ease;
+  cursor: pointer;
+}
+.glass-button:hover:not(:disabled) {
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+}
+.glass-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+.glass-button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+@utility glass-button-accent {
+  background: var(--fg);
+  color: var(--bg);
+  border: 1px solid var(--fg);
+  border-radius: 8px;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+  transition:
+    transform 80ms ease,
+    filter 120ms ease;
+  cursor: pointer;
+}
+.glass-button-accent:hover:not(:disabled) {
+  filter: brightness(0.92);
+}
+.glass-button-accent:active:not(:disabled) {
+  transform: scale(0.98);
+}
+.glass-button-accent:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Scrollbars — minimal and dark. */
+.glass-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+}
+.glass-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.glass-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+}
+.glass-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* === Puck chrome overrides ===
+   Puck uses --puck-color-* CSS variables internally. Rather than chase
+   individual selectors (which use hashed module class names), we
+   invert Puck's grey scale and remap white/black. Affects every Puck
+   surface that uses the tokens — drawer items, sidebars, inputs,
+   selected outlines, etc. */
+.puck-glass {
+  background: transparent;
+  color: var(--fg);
+  --puck-color-azure-04: var(--accent);
+  --puck-color-azure-05: var(--accent);
+}
+
+/* Light mode: keep Puck's default light-theme tokens; just retune what
+   shows through to match the sand palette. */
+.puck-glass {
+  --puck-color-grey-01: #1f160a;
+  --puck-color-grey-02: #2c2114;
+  --puck-color-grey-03: #4a3f2c;
+  --puck-color-grey-04: #5a4f3c;
+  --puck-color-grey-05: #7a6c54;
+  --puck-color-grey-09: rgba(40, 28, 14, 0.14);
+  --puck-color-grey-10: rgba(40, 28, 14, 0.07);
+  --puck-color-grey-11: rgba(40, 28, 14, 0.04);
+  --puck-color-grey-12: rgba(40, 28, 14, 0.02);
+}
+
+/* Dark mode: invert Puck's grey scale completely so its white surfaces
+   become near-transparent dark and its dark text becomes light. */
+.dark .puck-glass {
+  --puck-color-white: transparent;
+  --puck-color-black: #ffffff;
+
+  --puck-color-grey-01: #ffffff;
+  --puck-color-grey-02: #f5f5f5;
+  --puck-color-grey-03: #c2c2c2;
+  --puck-color-grey-04: #999999;
+  --puck-color-grey-05: #777777;
+  --puck-color-grey-06: #555555;
+  --puck-color-grey-07: #333333;
+  --puck-color-grey-08: #222222;
+  --puck-color-grey-09: rgba(255, 255, 255, 0.14);
+  --puck-color-grey-10: rgba(255, 255, 255, 0.06);
+  --puck-color-grey-11: rgba(255, 255, 255, 0.03);
+  --puck-color-grey-12: rgba(255, 255, 255, 0.015);
+}
+
+/* Drawer items (component palette) */
+.puck-glass [class*="_DrawerItem-draggable_"] {
+  background: var(--surface-2) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--fg) !important;
+  font-family: var(--font-geist-mono), ui-monospace, monospace !important;
+  font-size: 11px !important;
+  letter-spacing: 0.02em !important;
+  text-transform: lowercase !important;
+  border-radius: 8px !important;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease !important;
+}
+.puck-glass [class*="_DrawerItem-draggable_"]:hover {
+  background: var(--surface-elev) !important;
+  border-color: var(--border-strong) !important;
+}
+
+/* Section title labels in sidebars */
+.puck-glass [class*="_SidebarSection-title_"] {
+  background: transparent !important;
+  color: var(--fg-muted) !important;
+  font-family: var(--font-geist-mono), ui-monospace, monospace !important;
+  font-size: 10px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.12em !important;
+  border-color: var(--border) !important;
+}
+
+/* Input fields */
+.puck-glass [class*="_Input-input_"],
+.puck-glass [class*="_Input-textarea_"] {
+  background: var(--surface-2) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--fg) !important;
+  border-radius: 6px !important;
+  font-family: var(--font-geist-mono), ui-monospace, monospace !important;
+  font-size: 12px !important;
+}
+.puck-glass [class*="_Input-input_"]:focus,
+.puck-glass [class*="_Input-textarea_"]:focus {
+  background: var(--surface-elev) !important;
+  border-color: var(--border-strong) !important;
+}
+.puck-glass [class*="_Input-label_"] {
+  color: var(--fg-muted) !important;
+  font-family: var(--font-geist-mono), ui-monospace, monospace !important;
+  font-size: 10px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+}
+
+/* Radio / select swatches */
+.puck-glass [class*="_InputRadio-radio_"],
+.puck-glass [class*="_InputSelect-select_"] {
+  background: var(--surface-2) !important;
+  border-color: var(--border) !important;
+  color: var(--fg) !important;
+}
+.puck-glass [class*="_InputRadio-radio_"][data-selected="true"],
+.puck-glass [class*="_InputRadio-radio_"]:has(input:checked) {
+  background: var(--fg) !important;
+  color: var(--bg) !important;
+}
+
+/* Drop-zone empty state */
+.puck-glass [class*="_DropZone-content_"] {
+  background: transparent !important;
 }
