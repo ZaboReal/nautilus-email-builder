@@ -103,7 +103,7 @@ export function Toolbar({
         toast.push({
           tone: "success",
           title: "Sent",
-          body: json.id ? `Resend id: ${json.id}` : `Delivered to ${to}.`,
+          body: `"${subject || "(no subject)"}" → ${to}`,
         });
       } else {
         toast.push({ tone: "error", title: "Send failed", body: json.error });

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { extractInlineImages } from "@/email/inlineImages";
 import { renderEmailHtml } from "@/email/renderEmailHtml";
 import type { EmailData } from "@/email/schema";
 
@@ -84,13 +85,18 @@ export async function POST(req: Request) {
     );
   }
 
+  // Pull out base64 inline images; ship them as CID attachments so
+  // they render in the recipient's inbox without "display images" gates.
+  const { html: processedHtml, attachments } = extractInlineImages(html);
+
   const resend = new Resend(apiKey);
   try {
     const result = await resend.emails.send({
       from,
       to: body.to,
       subject: body.subject,
-      html,
+      html: processedHtml,
+      attachments: attachments.length > 0 ? attachments : undefined,
     });
     if (result.error) {
       return NextResponse.json(

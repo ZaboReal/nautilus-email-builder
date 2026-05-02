@@ -5,6 +5,7 @@
  */
 
 import { Resend } from "resend";
+import { extractInlineImages } from "@/email/inlineImages";
 import { renderEmailHtml } from "@/email/renderEmailHtml";
 import { updateScheduled } from "@/lib/scheduledStore";
 import type { ScheduledSendInput } from "./shared";
@@ -23,12 +24,14 @@ export async function sendScheduledEmail(
 
   try {
     const html = await renderEmailHtml(input.data);
+    const { html: processedHtml, attachments } = extractInlineImages(html);
     const resend = new Resend(apiKey);
     const result = await resend.emails.send({
       from,
       to: input.to,
       subject: input.subject,
-      html,
+      html: processedHtml,
+      attachments: attachments.length > 0 ? attachments : undefined,
     });
     if (result.error) {
       const error = result.error.message ?? "Resend rejected the send.";

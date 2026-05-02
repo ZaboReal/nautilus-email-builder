@@ -21,6 +21,7 @@
  */
 
 import { Resend } from "resend";
+import { extractInlineImages } from "@/email/inlineImages";
 import { renderEmailHtml } from "@/email/renderEmailHtml";
 import { getTemporalClient } from "@/temporal/client";
 import { TASK_QUEUE } from "@/temporal/shared";
@@ -72,12 +73,14 @@ const resendScheduler: Scheduler = {
   name: "resend",
   async start(input) {
     const html = await renderEmailHtml(input.data);
+    const { html: processedHtml, attachments } = extractInlineImages(html);
     const from = process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
     const result = await resendClient().emails.send({
       from,
       to: input.to,
       subject: input.subject,
-      html,
+      html: processedHtml,
+      attachments: attachments.length > 0 ? attachments : undefined,
       scheduledAt: input.scheduledFor.toISOString(),
     });
     if (result.error) throw new Error(result.error.message);
