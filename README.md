@@ -35,7 +35,7 @@ The worker auto-retries on connection failure, so order doesn't matter.
 | `RESEND_API_KEY` | sending / scheduling | — |
 | `RESEND_FROM_EMAIL` | sending | `onboarding@resend.dev` |
 | `OPENAI_API_KEY` | the Ask agent | — |
-| `OPENAI_MODEL` | the Ask agent | `gpt-4o-mini` |
+| `OPENAI_MODEL` | the Ask agent | `gpt-5` |
 | `SCHEDULER` | scheduler backend | `temporal` locally, `resend` on Vercel |
 | `TEMPORAL_ADDRESS` | scheduling | `localhost:7233` |
 | `TEMPORAL_NAMESPACE` | scheduling | `default` |
